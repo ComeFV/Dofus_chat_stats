@@ -216,8 +216,13 @@ if combat_log is not None:
         # per_skill_damage.rename(columns={"damage":"Damage", "heal received":"Heal given", "shield received":"Shield given"}, inplace=True)
         print(f"\n ==={i.name}===")
         print(per_skill_damage)
-        if per_skill_damage.shape[0]!=0:
+       if per_skill_damage.shape[0]!=0:
             fig = px.bar(per_skill_damage, title=i.name, barmode='group', text_auto=True, orientation ='h')
+            fig.update_layout(xaxis_title="Total",
+                    yaxis_title="Skill",
+                    legend_title="Type",
+                    hovermode="y unified")
+            fig.update_traces(hovertemplate='<b>%{x}</b>')
             detailed_figs.append(fig)
 
     total.set_index("Entity", inplace=True)
@@ -229,11 +234,17 @@ if combat_log is not None:
     ################################
 
     st.header("Global statistics")
-    st.plotly_chart(px.bar(total,
-                        barmode='group',
-                        text_auto=True,
-                        title="Total contribution",
-                        orientation ='h', height=700),
+    fig = px.bar(total,
+                barmode='group',
+                text_auto=True,
+                title="Total contribution",
+                orientation ='h', height=700)
+    fig.update_layout(xaxis_title="Total",
+                    yaxis_title="Entity",
+                    legend_title="Type",
+                    hovermode="y unified")
+    fig.update_traces(hovertemplate='<b>%{x}</b>')
+    st.plotly_chart(fig,
                     use_container_width=True)
     st.header("Detailed infos")
     col1, col2 = st.columns(2)
