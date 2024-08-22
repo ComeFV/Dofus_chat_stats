@@ -1,5 +1,6 @@
-# Dofus chat stat
+# Dofus KIKI Meter
 
+A damage-meter for the game Dofus.
 
 ## Installation
 
