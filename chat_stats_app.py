@@ -165,7 +165,7 @@ with st.expander("How to start"):
     col1, col2 = st.columns(2)
     col1.image("tutorial_images/select_channel.png", use_column_width=True)
     col2.image("tutorial_images/click_eraser.png", use_column_width=True)
-    st.write("After doing one or more combat, click on the save icon to download the .txt file :")
+    st.write("After one or more combat, click on the save icon to download the .txt file :")
     st.image("tutorial_images/save_log.png")
     st.write("Then you are good to go ! Just put your file in the widget below !")
 
