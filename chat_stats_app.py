@@ -112,18 +112,21 @@ def treat_line(line, current_entities_list, current_entity_index, skill, verbose
     else:
         line_split = re.split(' : ', line)
         if len(line_split)>=2:
-            target = line_split[0]
+            targets = re.split(', ', line_split[0])
             effect_raw = line_split[1]
             if 'PV' in effect_raw :
                 if '-' in effect_raw:
                     effect = 'damage'
                     value = re.search(r"[0-9]+", effect_raw)[0]
-                    current_entities_list[current_entity_index].add_action(skill, effect, value, target)
+                    for target in targets:
+                        current_entities_list[current_entity_index].add_action(skill, effect, value, target)
                 else:
                     effect = 'heal received'
                     value = re.search(r"[0-9]+", effect_raw)[0]
-                    target_index = find_entity_index(current_entities_list, target)
-                    current_entities_list[target_index].add_action(skill, effect, value, target)
+                    for target in targets:
+                        current_entities_list[current_entity_index].add_action(skill, effect, value, target)
+                        target_index = find_entity_index(current_entities_list, target)
+                        current_entities_list[target_index].add_action(skill, effect, value, target)
                 if verbose:
                     print(f'skill_effect : {skill, effect, int(value), target}')
 
@@ -131,12 +134,14 @@ def treat_line(line, current_entities_list, current_entity_index, skill, verbose
                 if '-' in effect_raw:
                     effect = 'damage'
                     value = re.search(r"[0-9]+", effect_raw)[0]
-                    current_entities_list[current_entity_index].add_action(skill, effect, value, target)
+                    for target in targets:
+                        current_entities_list[current_entity_index].add_action(skill, effect, value, target)
                 else:
                     effect = 'shield received'
                     value = re.search(r"[0-9]+", effect_raw)[0]
-                    target_index = find_entity_index(current_entities_list, target)
-                    current_entities_list[target_index].add_action(skill, effect, value, target)
+                    for target in targets:
+                        target_index = find_entity_index(current_entities_list, target)
+                        current_entities_list[target_index].add_action(skill, effect, value, target)
                 if verbose:
                     print(f'skill_effect : {skill, effect, int(value), target}')
             
