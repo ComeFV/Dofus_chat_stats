@@ -156,7 +156,7 @@ st.set_page_config(page_title="Dofus KIKI meter", layout="wide")
 
 st.title("Dofus KIKI meter")
 
-with st.expander("How to download combat logs as '.txt' file"):
+with st.expander("How to start"):
     st.write("\nFirst you need to open the external chat window :")
     col1, col2 = st.columns(2)
     col1.image("tutorial_images/menu_click.png", use_column_width=True)
@@ -167,6 +167,7 @@ with st.expander("How to download combat logs as '.txt' file"):
     col2.image("tutorial_images/click_eraser.png", use_column_width=True)
     st.write("After doing one or more combat, click on the save icon to download the .txt file :")
     st.image("tutorial_images/save_log.png")
+    st.write("Then you are good to go ! Just put your file in the widget below !")
 
 combat_log = st.file_uploader("Select combat logs")
 
