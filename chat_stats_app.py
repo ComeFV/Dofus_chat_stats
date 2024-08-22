@@ -192,7 +192,14 @@ if combat_log is not None:
             current_entity_index = None
             skill = None
             combat_number += 1
-
+            
+    if combat_number == 0:
+        st.warning("Warning : No text 'fin de combat' detected, all the logs will be considered as a single combat")
+        combat_entity_list.append(current_entities_list)
+        current_entities_list = []
+        current_entity_index = None
+        skill = None
+        combat_number += 1
 
     with st.sidebar:
         st.title("Combat selection")
