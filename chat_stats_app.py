@@ -216,7 +216,7 @@ if combat_log is not None:
         # per_skill_damage.rename(columns={"damage":"Damage", "heal received":"Heal given", "shield received":"Shield given"}, inplace=True)
         print(f"\n ==={i.name}===")
         print(per_skill_damage)
-       if per_skill_damage.shape[0]!=0:
+        if per_skill_damage.shape[0]!=0:
             fig = px.bar(per_skill_damage, title=i.name, barmode='group', text_auto=True, orientation ='h')
             fig.update_layout(xaxis_title="Total",
                     yaxis_title="Skill",
