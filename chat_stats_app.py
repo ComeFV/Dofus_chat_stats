@@ -191,7 +191,8 @@ if combat_log is not None:
 
     with st.sidebar:
         st.title("Combat selection")
-        combat_number = st.selectbox("Select combat", [i for i in range(1, len(combat_entity_list)+1)])
+        combat_number = st.selectbox("Select combat", [i for i in range(1, len(combat_entity_list)+1)],
+                                      help="For a combat to be detected, the file needs to have the 'fin de combat' line at the end of each combat")
         entities_list = combat_entity_list[combat_number-1]
 
 
