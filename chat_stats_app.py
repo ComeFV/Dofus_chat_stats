@@ -53,16 +53,28 @@ def treat_line(line, current_entities_list, current_entity_index, skill, verbose
         if verbose:
             print(f"Battle {combat_number} end")
         end_battle = True
-
+    
     # skill cast
-    elif re.search(r' lance ', line) is not None:
+    skill_cast = re.search(r' lance ', line)
+    weapon_use = re.search(r' attaque avec ', line)
+    if (skill_cast is not None) or (weapon_use is not None):
         # skill cast form : ' Caster lance Skill'
-        line_split = re.split(' lance ', line)
+        if skill_cast is not None:
+            line_split = re.split(' lance ', line)
+        elif weapon_use is not None:
+            line_split = re.split(' attaque avec ', line)
+        
         caster = line_split[0]
         skill = line_split[1]
+        if "Gelure" in skill:
+            print(f"Line = {line}")
+            print(f"caster = {caster}")
+            print(f"skill = {skill}")
         CC = re.search(r". Coup critique", skill)
         if CC is not None:
             skill = skill[:CC.start()]
+        else:
+            skill = skill[:-1] # enlever le point à la fin
             
         if verbose:
             print(f'skill_cast : {caster} - {skill}')
@@ -114,8 +126,6 @@ def treat_line(line, current_entities_list, current_entity_index, skill, verbose
         if len(line_split)>=2:
             targets = re.split(', ', line_split[0])
             effect_raw = line_split[1]
-            test_condition = 'PV\.' in effect_raw
-            print(f"effect_raw : {effect_raw} -> 'PV\. bool : {test_condition}")
             if 'PV.' in effect_raw :
                 if '-' in effect_raw:
                     effect = 'damage'
