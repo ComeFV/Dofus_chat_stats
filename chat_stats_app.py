@@ -19,6 +19,10 @@ class Entity:
         self.skill_summary.fillna(0, inplace=True)
 
 
+def remove_dot(string):
+    """removes all dots from a string"""
+    return string.replace('.', '')
+
 def find_entity_index(entities_list, name):
     """
         returns the index of the entity whose name is passed in parameter
@@ -66,18 +70,18 @@ def treat_line(line, current_entities_list, current_entity_index, skill, verbose
         
         caster = line_split[0]
         skill = line_split[1]
-        if "Gelure" in skill:
-            print(f"Line = {line}")
-            print(f"caster = {caster}")
-            print(f"skill = {skill}")
+        
+        # strip the caster and skill from '.'
+
         CC = re.search(r". Coup critique", skill)
         if CC is not None:
             skill = skill[:CC.start()]
-        else:
-            skill = skill[:-1] # enlever le point à la fin
+        
             
+        caster = remove_dot(caster)
+        skill = remove_dot(skill)
         if verbose:
-            print(f'skill_cast : {caster} - {skill}')
+            print(f'->skill_cast : {caster} - {skill}')
 
         # search if caster is new or existing
         if current_entities_list == []:
@@ -100,9 +104,12 @@ def treat_line(line, current_entities_list, current_entity_index, skill, verbose
         caster = re.split(' de ', line)[-1]
         str_skill = line[:re.search(' de '+ caster, line).start()]
         skill = re.split(' déclenche ', str_skill)[1]
+        
+        caster = remove_dot(caster)
+        skill = remove_dot(skill)
 
         if verbose:
-            print(f'skill_cast : {caster} - {skill}')
+            print(f'->skill_cast : {caster} - {skill}')
 
         # search if caster is new or existing
         if current_entities_list == []:
@@ -125,6 +132,7 @@ def treat_line(line, current_entities_list, current_entity_index, skill, verbose
         line_split = re.split(' : ', line)
         if len(line_split)>=2:
             targets = re.split(', ', line_split[0])
+            targets = [remove_dot(t) for t in targets]
             effect_raw = line_split[1]
             if ('PV.' in effect_raw) or ('PV (mort)' in effect_raw):
                 if '-' in effect_raw:
@@ -132,15 +140,18 @@ def treat_line(line, current_entities_list, current_entity_index, skill, verbose
                     value = re.search(r"[0-9]+", effect_raw)[0]
                     for target in targets:
                         current_entities_list[current_entity_index].add_action(skill, effect, value, target)
+                        if verbose:
+                            print(f'\tskill_effect : {skill, effect, int(value), target}')
+                            # print(f'\t{current_entities_list[current_entity_index].skill_summary}')
                 else:
                     effect = 'heal received'
                     value = re.search(r"[0-9]+", effect_raw)[0]
                     for target in targets:
-                        current_entities_list[current_entity_index].add_action(skill, effect, value, target)
                         target_index = find_entity_index(current_entities_list, target)
                         current_entities_list[target_index].add_action(skill, effect, value, target)
-                if verbose:
-                    print(f'skill_effect : {skill, effect, int(value), target}')
+                        if verbose:
+                            print(f'\tskill_effect : {skill, effect, int(value), target}')
+                            # print(f'\t{current_entities_list[current_entity_index].skill_summary}')
 
             elif ('PB' in effect_raw) or ('Bouclier' in effect_raw):
                 if '-' in effect_raw:
@@ -148,14 +159,18 @@ def treat_line(line, current_entities_list, current_entity_index, skill, verbose
                     value = re.search(r"[0-9]+", effect_raw)[0]
                     for target in targets:
                         current_entities_list[current_entity_index].add_action(skill, effect, value, target)
+                        if verbose:
+                            print(f'\tskill_effect : {skill, effect, int(value), target}')
+                            # print(f'\t{current_entities_list[current_entity_index].skill_summary}')
                 else:
                     effect = 'shield received'
                     value = re.search(r"[0-9]+", effect_raw)[0]
                     for target in targets:
                         target_index = find_entity_index(current_entities_list, target)
                         current_entities_list[target_index].add_action(skill, effect, value, target)
-                if verbose:
-                    print(f'skill_effect : {skill, effect, int(value), target}')
+                        if verbose:
+                            print(f'\tskill_effect : {skill, effect, int(value), target}')
+                            # print(f'\t{current_entities_list[current_entity_index].skill_summary}')
             
     return current_entities_list, current_entity_index, skill, end_battle
 
@@ -198,7 +213,7 @@ if combat_log is not None:
     skill = None
     combat_number = 0
     for l in combat_log: 
-        current_entities_list, current_entity_index, skill, end_battle = treat_line(l, current_entities_list, current_entity_index, skill)
+        current_entities_list, current_entity_index, skill, end_battle = treat_line(l, current_entities_list, current_entity_index, skill, verbose=True)
         if end_battle:
             combat_entity_list.append(current_entities_list)
             current_entities_list = []
@@ -227,7 +242,7 @@ if combat_log is not None:
         # detailed damage stats
         per_skill_damage = i.skill_summary
         per_skill_damage = per_skill_damage.astype({"damage":int, "heal received":int, "shield received":int})
-        per_skill_damage = per_skill_damage.groupby("skill").sum()
+        per_skill_damage = per_skill_damage.groupby("skill").sum(numeric_only=True)
         per_skill_damage.sort_values(by="damage", inplace = True)
 
         new_row_total = {"Entity":i.name,
