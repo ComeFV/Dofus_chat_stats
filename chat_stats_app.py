@@ -126,7 +126,7 @@ def treat_line(line, current_entities_list, current_entity_index, skill, verbose
         if len(line_split)>=2:
             targets = re.split(', ', line_split[0])
             effect_raw = line_split[1]
-            if 'PV.' in effect_raw :
+            if ('PV.' in effect_raw) or ('PV (mort)' in effect_raw):
                 if '-' in effect_raw:
                     effect = 'damage'
                     value = re.search(r"[0-9]+", effect_raw)[0]
